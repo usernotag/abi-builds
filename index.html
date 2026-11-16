@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="amber">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ABI // Tactical Builds & Gear DB</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Экран ввода пароля -->
+  <div id="auth-overlay" class="auth-overlay">
+    <div class="auth-card">
+      <div class="auth-badge">RESTRICTED ACCESS // ABI DB</div>
+      <h1 class="auth-title">ТАКТИЧЕСКАЯ БАЗА СБОРОК</h1>
+      <p class="auth-subtitle">Введите пароль отряда для доступа к сборкам и шпаргалкам</p>
+      <form id="auth-form" class="auth-form">
+        <input 
+          type="password" 
+          id="auth-password" 
+          class="tactical-input" 
+          placeholder="Пароль доступа (по умолчанию: 1234)" 
+          autocomplete="current-password"
+          required
+        >
+        <button type="submit" class="btn btn-primary btn-block">АВТОРИЗАЦИЯ</button>
+      </form>
+      <p id="auth-error" class="auth-error hidden">Неверный пароль доступа</p>
+    </div>
+  </div>
+
+  <!-- Основной интерфейс приложения -->
+  <div id="app-wrapper" class="app-wrapper hidden">
+    
+    <!-- Шапка -->
+    <header class="main-header">
+      <div class="container header-inner">
+        <div class="brand">
+          <span class="brand-tag">ABI</span>
+          <div class="brand-text">
+            <span class="brand-title">TACTICAL DATABASE</span>
+            <span class="brand-sub">СБОРКИ ОРУЖИЯ И СНАРЯЖЕНИЕ</span>
+          </div>
+        </div>
+
+        <!-- Переключение вкладок -->
+        <nav class="main-nav">
+          <button class="nav-tab active" data-tab="builds">Сборки оружия</button>
+          <button class="nav-tab" data-tab="gear">Снаряжение и Карты</button>
+        </nav>
+
+        <!-- Правая панель: Темы и Режим редактора -->
+        <div class="header-controls">
+          <div class="theme-switcher">
+            <label for="theme-select" class="sr-only">Тема оформления</label>
+            <select id="theme-select" class="tactical-select" title="Выбор цветовой схемы">
+              <option value="amber">Тактический янтарь</option>
+              <option value="blue">Холодный синий</option>
+              <option value="olive">Военный олива</option>
+            </select>
+          </div>
+          <button id="toggle-editor-btn" class="btn btn-outline">
+            <span class="indicator-dot"></span>
+            Режим редактора
+          </button>
+        </div>
+      </div>
+
+      <!-- Панель управления редактора (скрыта по умолчанию) -->
+      <div id="editor-toolbar" class="editor-toolbar hidden">
+        <div class="container editor-toolbar-inner">
+          <div class="editor-status">
+            <span class="editor-badge">РЕЖИМ РЕДАКТОРА АКТИВЕН</span>
+            <span id="storage-status" class="storage-status">Данные синхронизированы с builds.json</span>
+          </div>
+          <div class="editor-actions">
+            <button id="add-build-btn" class="btn btn-primary">+ Добавить сборку</button>
+            <button id="add-gear-btn" class="btn btn-primary">+ Добавить броню/шлем</button>
+            <button id="export-json-btn" class="btn btn-secondary" title="Скачать готовый файл для замены в GitHub">Скачать builds.json</button>
+            <label class="btn btn-secondary file-upload-label" title="Загрузить builds.json с компьютера">
+              Загрузить builds.json
+              <input type="file" id="import-json-input" accept=".json" hidden>
+            </label>
+            <button id="reset-local-btn" class="btn btn-danger-outline" title="Удалить изменения в браузере и загрузить чистый builds.json с сервера">Сбросить кэш</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Контент -->
+    <main class="container main-content">
+
+      <!-- ВКЛАДКА 1: СБОРКИ ОРУЖИЯ -->
+      <section id="tab-builds" class="tab-section active">
+        
+        <!-- Фильтры и поиск -->
+        <div class="filters-panel">
+          <div class="search-row">
+            <div class="search-input-wrap">
+              <input 
+                type="text" 
+                id="search-input" 
+                class="tactical-input search-input" 
+                placeholder="Живой поиск по оружию, калибру, патронам или заметке (например: АК-74Н, 5.45, M80)..."
+              >
+            </div>
+            <button id="reset-filters-btn" class="btn btn-secondary">Сбросить фильтры</button>
+          </div>
+
+          <div class="filter-groups">
+            <!-- Фильтр по бюджету -->
+            <div class="filter-group">
+              <span class="filter-label">Бюджет (в коэнах):</span>
+              <div class="filter-pills" id="filter-budget">
+                <button class="pill active" data-value="all">Все</button>
+                <button class="pill" data-value="cheap" id="pill-cheap-label">Дешёвые (до 300 000)</button>
+                <button class="pill" data-value="medium" id="pill-medium-label">Средние (300 000 – 500 000)</button>
+                <button class="pill" data-value="expensive" id="pill-expensive-label">Дорогие (от 500 000+)</button>
+              </div>
+            </div>
+
+            <!-- Фильтр по классу эффективности -->
+            <div class="filter-group">
+              <span class="filter-label">Класс эффективности:</span>
+              <div class="filter-pills" id="filter-class">
+                <button class="pill active" data-value="all">Все</button>
+                <button class="pill" data-value="min">Минималка (базовый обвес)</button>
+                <button class="pill" data-value="mid">Середняк (рабочий вариант)</button>
+                <button class="pill" data-value="meta">Мета (топ в своём бюджете)</button>
+              </div>
+            </div>
+
+            <!-- Фильтр по зоне рейда -->
+            <div class="filter-group">
+              <span class="filter-label">Зона рейда:</span>
+              <div class="filter-pills" id="filter-zone">
+                <button class="pill active" data-value="all">Все</button>
+                <button class="pill" data-value="white">Белая (Обычка)</button>
+                <button class="pill" data-value="yellow">Жёлтая (Блокада)</button>
+                <button class="pill" data-value="red">Красная (Запретка)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Счётчик результатов -->
+        <div class="results-bar">
+          <span>Найдено сборок: <strong id="builds-count">0</strong></span>
+        </div>
+
+        <!-- Сетка карточек сборок -->
+        <div id="builds-grid" class="builds-grid"></div>
+      </section>
+
+      <!-- ВКЛАДКА 2: СНАРЯЖЕНИЕ И КАРТЫ -->
+      <section id="tab-gear" class="tab-section hidden">
+        
+        <!-- Блок внешних ссылок на карты и справочники -->
+        <div class="section-block">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">ИНТЕРАКТИВНЫЕ КАРТЫ И СПРАВОЧНИКИ</h2>
+              <p class="section-desc">Быстрый доступ к точкам спавна, выходам, сейфам и таблицам пробития (замените <code>href="#"</code> в <code>index.html</code> на свои ссылки)</p>
+            </div>
+          </div>
+
+          <div class="links-grid">
+            <a href="#" target="_blank" rel="noopener noreferrer" class="resource-card">
+              <span class="resource-tag">КАРТА ЛОКАЦИИ</span>
+              <h3 class="resource-title">Ферма (Farm)</h3>
+              <p class="resource-desc">Спавны ЧВК, сейфы в Мотеле, ключи и условия выходов.</p>
+              <span class="resource-link-text">Открыть карту ↗</span>
+            </a>
+
+            <a href="#" target="_blank" rel="noopener noreferrer" class="resource-card">
+              <span class="resource-tag">КАРТА ЛОКАЦИИ</span>
+              <h3 class="resource-title">Долина (Valley)</h3>
+              <p class="resource-desc">Вилла, завод, снайперские позиции и точки эвакуации.</p>
+              <span class="resource-link-text">Открыть карту ↗</span>
+            </a>
+
+            <a href="#" target="_blank" rel="noopener noreferrer" class="resource-card">
+              <span class="resource-tag">КАРТА ЛОКАЦИИ</span>
+              <h3 class="resource-title">Нортридж (Northridge)</h3>
+              <p class="resource-desc">Отель, канализация, лесопилка и маршруты ротации.</p>
+              <span class="resource-link-text">Открыть карту ↗</span>
+            </a>
+
+            <a href="#" target="_blank" rel="noopener noreferrer" class="resource-card">
+              <span class="resource-tag">КАРТА ЛОКАЦИИ</span>
+              <h3 class="resource-title">Арсенал и Телецентр</h3>
+              <p class="resource-desc">Планы этажей, рычаги активации выходов и спавны рейдеров.</p>
+              <span class="resource-link-text">Открыть карту ↗</span>
+            </a>
+
+            <a href="#" target="_blank" rel="noopener noreferrer" class="resource-card">
+              <span class="resource-tag">БАЛЛИСТИКА</span>
+              <h3 class="resource-title">Таблица патронов и пробития</h3>
+              <p class="resource-desc">Актуальный урон по плоти, пробитие брони 1–6 класса и ТТК.</p>
+              <span class="resource-link-text">Открыть таблицу ↗</span>
+            </a>
+
+            <a href="#" target="_blank" rel="noopener noreferrer" class="resource-card">
+              <span class="resource-tag">ЭКОНОМИКА</span>
+              <h3 class="resource-title">Выгодные бартеры у контактов</h3>
+              <p class="resource-desc">Обмен шлемов, брони и патронов у Дика, Влада и Томаса.</p>
+              <span class="resource-link-text">Открыть справочник ↗</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Редактируемая шпаргалка по шлемам и бронежилетам -->
+        <div class="section-block">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">ШПАРГАЛКА ПО ШЛЕМАМ И БРОНЕЖИЛЕТАМ</h2>
+              <p class="section-desc">Проверенное снаряжение с заметками по цене, штрафам к эргономике и выживаемости. Редактируется и сохраняется в <code>builds.json</code>.</p>
+            </div>
+            <div class="gear-filter-pills" id="filter-gear-type">
+              <button class="pill active" data-value="all">Все</button>
+              <button class="pill" data-value="helmet">Шлемы</button>
+              <button class="pill" data-value="armor">Бронежилеты и разгрузки</button>
+            </div>
+          </div>
+
+          <div id="gear-grid" class="gear-grid"></div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО: ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ СБОРКИ -->
+  <div id="build-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="build-modal-title" class="modal-title">ДОБАВИТЬ СБОРКУ</h2>
+        <button type="button" class="modal-close" id="close-build-modal">&times;</button>
+      </div>
+      <form id="build-form" class="modal-form">
+        <input type="hidden" id="build-id">
+
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="build-weapon">Название оружия *</label>
+            <input type="text" id="build-weapon" class="tactical-input" placeholder="Например: АК-74Н" required>
+          </div>
+          <div class="form-group">
+            <label for="build-caliber">Калибр *</label>
+            <input type="text" id="build-caliber" class="tactical-input" placeholder="Например: 5.45×39" required>
+          </div>
+        </div>
+
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="build-price">Стоимость (в коэнах) *</label>
+            <input type="number" id="build-price" class="tactical-input" placeholder="Например: 245000" min="0" step="1000" required>
+          </div>
+          <div class="form-group">
+            <label for="build-budget-mode">Категория бюджета</label>
+            <select id="build-budget-mode" class="tactical-select">
+              <option value="auto">Автоматически от цены</option>
+              <option value="cheap">Вручную: Дешёвая</option>
+              <option value="medium">Вручную: Средняя</option>
+              <option value="expensive">Вручную: Дорогая</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="build-class">Класс эффективности *</label>
+            <select id="build-class" class="tactical-select" required>
+              <option value="min">Минималка (базовый обвес)</option>
+              <option value="mid">Середняк (рабочий вариант)</option>
+              <option value="meta">Мета (топ в своём бюджете)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="build-zone">Рекомендуемая зона *</label>
+            <select id="build-zone" class="tactical-select" required>
+              <option value="white">Белая (Обычка)</option>
+              <option value="yellow">Жёлтая (Блокада)</option>
+              <option value="red">Красная (Запретка)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="build-ammo">Рекомендуемые патроны *</label>
+          <input type="text" id="build-ammo" class="tactical-input" placeholder="Например: ПП (3 кл.) / БП (4 кл.)" required>
+        </div>
+
+        <div class="form-group">
+          <label for="build-code">Код сборки (Share Code) *</label>
+          <input type="text" id="build-code" class="tactical-input code-font" placeholder="Вставьте код импорта из игры" required>
+        </div>
+
+        <div class="form-group">
+          <label for="build-notes">Краткая заметка / особенности</label>
+          <textarea id="build-notes" class="tactical-input tactical-textarea" rows="3" placeholder="На какую дистанцию рассчитана, советы по отдаче или обвесу..."></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="cancel-build-modal">Отмена</button>
+          <button type="submit" class="btn btn-primary">Сохранить сборку</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО: ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ СНАРЯЖЕНИЯ -->
+  <div id="gear-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="gear-modal-title" class="modal-title">ДОБАВИТЬ СНАРЯЖЕНИЕ</h2>
+        <button type="button" class="modal-close" id="close-gear-modal">&times;</button>
+      </div>
+      <form id="gear-form" class="modal-form">
+        <input type="hidden" id="gear-id">
+
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="gear-name">Название (шлем / броня) *</label>
+            <input type="text" id="gear-name" class="tactical-input" placeholder="Например: КСС-2 + Забрало ДК6" required>
+          </div>
+          <div class="form-group">
+            <label for="gear-type">Тип снаряжения *</label>
+            <select id="gear-type" class="tactical-select" required>
+              <option value="helmet">Шлем</option>
+              <option value="armor">Бронежилет / Бронеразгрузка</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="gear-tier">Класс защиты *</label>
+            <select id="gear-tier" class="tactical-select" required>
+              <option value="3 класс">3-й класс защиты</option>
+              <option value="4 класс">4-й класс защиты</option>
+              <option value="5 класс">5-й класс защиты</option>
+              <option value="6 класс">6-й класс защиты</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="gear-price">Ориентировочная цена *</label>
+            <input type="text" id="gear-price" class="tactical-input" placeholder="Например: ~65 000 ₭ (или бартер)" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="gear-status">Оценка эффективности *</label>
+          <select id="gear-status" class="tactical-select" required>
+            <option value="green">Зелёный — Топ за свои деньги / Мета</option>
+            <option value="yellow">Жёлтый — Рабочий / Ситуативный вариант</option>
+            <option value="red">Красный — Дорого / Специфический</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="gear-notes">Подробная заметка (плюсы, минусы, совместимость с наушниками) *</label>
+          <textarea id="gear-notes" class="tactical-input tactical-textarea" rows="3" placeholder="Держит попадание Т4 патрона, можно надеть активные наушники..." required></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="cancel-gear-modal">Отмена</button>
+          <button type="submit" class="btn btn-primary">Сохранить позицию</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Всплывающие уведомления -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
