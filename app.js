@@ -1,14 +1,14 @@
 /**
  * НАСТРОЙКИ ПРИЛОЖЕНИЯ И БЕЗОПАСНОСТИ
- * SHA-256 хеш пароля "1234" по умолчанию
+ * Новый пароль: 1337228
  */
 
 const REQUIRE_PASSWORD = true;
 
 const CONFIG = {
-  PASSWORD_HASH: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+  PASSWORD_HASH: "a835a30164e97c31144be99d4a652ef987a53c8b28863535f4a53d914275852b",
   STORAGE_KEYS: {
-    AUTH_SESSION: "abi_auth_unlocked",
+    AUTH_SESSION: "abi_auth_v2",
     THEME: "abi_theme",
     LOCAL_DATA: "abi_local_db_v2"
   }
@@ -189,7 +189,6 @@ function updateStorageStatusUI() {
   }
 }
 
-// Обновление визуальной заливки трека двойного слайдера
 function updateSliderTrackFill() {
   const sliderMin = document.getElementById("price-slider-min");
   const sliderMax = document.getElementById("price-slider-max");

@@ -1,97 +1,139 @@
 /* ==========================================================================
-   ЦВЕТОВЫЕ ТЕМЫ (4 БЛАГОРОДНЫЕ ТЁМНЫЕ ТЕМЫ БЕЗ КИСЛОТНОСТИ)
+   ЦВЕТОВЫЕ ТЕМЫ (18 ТЁМНЫХ ПАЛИТР С КОНТРАСТНЫМИ КАРТОЧКАМИ И КНОПКАМИ)
    ========================================================================== */
 
 /* 1. «ABI Gold» (По умолчанию) */
 :root, [data-theme="gold"] {
-  --bg-main: #0b0c0e;
-  --bg-card: #131519;
-  --bg-elevated: #1a1d24;
-  --bg-input: #0f1115;
-  
-  --text-main: #e4e4e7;
-  --text-muted: #9f9fa6;
-  --text-dim: #71717a;
-
-  --border-color: #27272a;
-  --border-hover: #3f3f46;
-
-  --accent: #d4af37;
-  --accent-hover: #c5a059;
-  --accent-soft: rgba(212, 175, 55, 0.12);
-  --accent-border: rgba(212, 175, 55, 0.35);
-  --accent-contrast: #0b0c0e;
-
-  --status-green: #34d399;
-  --status-green-bg: rgba(52, 211, 153, 0.12);
-  --status-green-border: rgba(52, 211, 153, 0.35);
-
-  --status-yellow: #fbbf24;
-  --status-yellow-bg: rgba(251, 191, 36, 0.12);
-  --status-yellow-border: rgba(251, 191, 36, 0.35);
-
-  --status-red: #f87171;
-  --status-red-bg: rgba(248, 113, 113, 0.12);
-  --status-red-border: rgba(248, 113, 113, 0.35);
-
-  --status-white: #d4d4d8;
-  --status-white-bg: rgba(212, 212, 216, 0.1);
-  --status-white-border: rgba(212, 212, 216, 0.3);
-
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --bg-main: #0b0c0e; --bg-card: #14171d; --bg-elevated: #1d212a; --bg-input: #0e1014;
+  --text-main: #e4e4e7; --text-muted: #9f9fa6; --text-dim: #71717a;
+  --border-color: #2a2e39; --border-hover: #3d4352;
+  --accent: #d4af37; --accent-hover: #c5a059; --accent-soft: rgba(212, 175, 55, 0.12); --accent-border: rgba(212, 175, 55, 0.35); --accent-contrast: #0b0c0e;
+  --status-green: #34d399; --status-green-bg: rgba(52, 211, 153, 0.12); --status-green-border: rgba(52, 211, 153, 0.35);
+  --status-yellow: #fbbf24; --status-yellow-bg: rgba(251, 191, 36, 0.12); --status-yellow-border: rgba(251, 191, 36, 0.35);
+  --status-red: #f87171; --status-red-bg: rgba(248, 113, 113, 0.12); --status-red-border: rgba(248, 113, 113, 0.35);
+  --status-white: #d4d4d8; --status-white-bg: rgba(212, 212, 216, 0.1); --status-white-border: rgba(212, 212, 216, 0.3);
+  --radius-sm: 4px; --radius-md: 6px; --radius-lg: 8px; --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.5);
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
 }
 
-/* 2. «Stealth Graphite» */
-[data-theme="graphite"] {
-  --bg-main: #09090b;
-  --bg-card: #121215;
-  --bg-elevated: #18181b;
-  --bg-input: #0c0c0e;
-  --border-color: #27272a;
-  --border-hover: #3f3f46;
-
-  --accent: #e4e4e7;
-  --accent-hover: #ffffff;
-  --accent-soft: rgba(228, 228, 231, 0.12);
-  --accent-border: rgba(228, 228, 231, 0.35);
-  --accent-contrast: #09090b;
-}
-
-/* 3. «Crimson Raid» */
+/* 2. «Crimson Raid» */
 [data-theme="crimson"] {
-  --bg-main: #0c0a0b;
-  --bg-card: #151214;
-  --bg-elevated: #1f191c;
-  --bg-input: #0f0d0e;
-  --border-color: #2b2226;
-  --border-hover: #423238;
-
-  --accent: #e11d48;
-  --accent-hover: #be123c;
-  --accent-soft: rgba(225, 29, 72, 0.12);
-  --accent-border: rgba(225, 29, 72, 0.35);
-  --accent-contrast: #ffffff;
+  --bg-main: #0c0a0b; --bg-card: #171316; --bg-elevated: #231b20; --bg-input: #0f0d0e;
+  --border-color: #2e242a; --border-hover: #473740;
+  --accent: #e11d48; --accent-hover: #be123c; --accent-soft: rgba(225, 29, 72, 0.12); --accent-border: rgba(225, 29, 72, 0.35); --accent-contrast: #ffffff;
 }
 
-/* 4. «Night Vision» */
+/* 3. «Night Vision» */
 [data-theme="nightvision"] {
-  --bg-main: #080b0a;
-  --bg-card: #101513;
-  --bg-elevated: #17201c;
-  --bg-input: #0a0e0d;
-  --border-color: #1e2b25;
-  --border-hover: #2d4238;
+  --bg-main: #080b0a; --bg-card: #121917; --bg-elevated: #1a2522; --bg-input: #0a0e0d;
+  --border-color: #22302b; --border-hover: #364d44;
+  --accent: #10b981; --accent-hover: #059669; --accent-soft: rgba(16, 185, 129, 0.12); --accent-border: rgba(16, 185, 129, 0.35); --accent-contrast: #080b0a;
+}
 
-  --accent: #10b981;
-  --accent-hover: #059669;
-  --accent-soft: rgba(16, 185, 129, 0.12);
-  --accent-border: rgba(16, 185, 129, 0.35);
-  --accent-contrast: #080b0a;
+/* 4. «Tactical Orange» */
+[data-theme="tactical_orange"] {
+  --bg-main: #09090b; --bg-card: #141518; --bg-elevated: #1e2025; --bg-input: #0b0c0e;
+  --border-color: #272930; --border-hover: #3e424d;
+  --accent: #f97316; --accent-hover: #ea580c; --accent-soft: rgba(249, 115, 22, 0.12); --accent-border: rgba(249, 115, 22, 0.35); --accent-contrast: #ffffff;
+}
+
+/* 5. «Cyber Violet» */
+[data-theme="cyber_violet"] {
+  --bg-main: #0b0a10; --bg-card: #14131c; --bg-elevated: #1d1b28; --bg-input: #0e0d13;
+  --border-color: #262436; --border-hover: #3a3752;
+  --accent: #8b5cf6; --accent-hover: #7c3aed; --accent-soft: rgba(139, 92, 246, 0.12); --accent-border: rgba(139, 92, 246, 0.35); --accent-contrast: #ffffff;
+}
+
+/* 6. «Arctic Cyan» */
+[data-theme="arctic_cyan"] {
+  --bg-main: #0a0d0f; --bg-card: #12171b; --bg-elevated: #1a2228; --bg-input: #0d1013;
+  --border-color: #212b33; --border-hover: #334350;
+  --accent: #06b6d4; --accent-hover: #0891b2; --accent-soft: rgba(6, 182, 212, 0.12); --accent-border: rgba(6, 182, 212, 0.35); --accent-contrast: #0a0d0f;
+}
+
+/* 7. «Desert Coyote» */
+[data-theme="desert_coyote"] {
+  --bg-main: #0d0c0a; --bg-card: #171512; --bg-elevated: #221e1a; --bg-input: #100f0d;
+  --border-color: #2b2722; --border-hover: #423b34;
+  --accent: #c29b61; --accent-hover: #ab834a; --accent-soft: rgba(194, 155, 97, 0.12); --accent-border: rgba(194, 155, 97, 0.35); --accent-contrast: #0d0c0a;
+}
+
+/* 8. «Toxic Amber» */
+[data-theme="toxic_amber"] {
+  --bg-main: #0a0908; --bg-card: #151311; --bg-elevated: #201c18; --bg-input: #0c0b0a;
+  --border-color: #292521; --border-hover: #403833;
+  --accent: #f59e0b; --accent-hover: #d97706; --accent-soft: rgba(245, 158, 11, 0.12); --accent-border: rgba(245, 158, 11, 0.35); --accent-contrast: #0a0908;
+}
+
+/* 9. «Sakura Night» */
+[data-theme="sakura_night"] {
+  --bg-main: #0d0a0c; --bg-card: #171216; --bg-elevated: #231a20; --bg-input: #100c0e;
+  --border-color: #2c2229; --border-hover: #443540;
+  --accent: #f472b6; --accent-hover: #ec4899; --accent-soft: rgba(244, 114, 182, 0.12); --accent-border: rgba(244, 114, 182, 0.35); --accent-contrast: #0d0a0c;
+}
+
+/* 10. «Royal Cobalt» */
+[data-theme="royal_cobalt"] {
+  --bg-main: #090b10; --bg-card: #111521; --bg-elevated: #1a2030; --bg-input: #0b0e15;
+  --border-color: #1e263b; --border-hover: #2e3a5a;
+  --accent: #3b82f6; --accent-hover: #2563eb; --accent-soft: rgba(59, 130, 246, 0.12); --accent-border: rgba(59, 130, 246, 0.35); --accent-contrast: #ffffff;
+}
+
+/* 11. «Lime Strike» */
+[data-theme="lime_strike"] {
+  --bg-main: #0a0c09; --bg-card: #131711; --bg-elevated: #1c221a; --bg-input: #0c0f0b;
+  --border-color: #232b1f; --border-hover: #364230;
+  --accent: #84cc16; --accent-hover: #65a30d; --accent-soft: rgba(132, 204, 22, 0.12); --accent-border: rgba(132, 204, 22, 0.35); --accent-contrast: #0a0c09;
+}
+
+/* 12. «Sunset Coral» */
+[data-theme="sunset_coral"] {
+  --bg-main: #0e0a0a; --bg-card: #191212; --bg-elevated: #261b1b; --bg-input: #110d0d;
+  --border-color: #2e2121; --border-hover: #473333;
+  --accent: #fb7185; --accent-hover: #f43f5e; --accent-soft: rgba(251, 113, 133, 0.12); --accent-border: rgba(251, 113, 133, 0.35); --accent-contrast: #0e0a0a;
+}
+
+/* 13. «Mint Matrix» */
+[data-theme="mint_matrix"] {
+  --bg-main: #080c0b; --bg-card: #101715; --bg-elevated: #182321; --bg-input: #0b0f0e;
+  --border-color: #1d2b27; --border-hover: #2e433d;
+  --accent: #2dd4bf; --accent-hover: #14b8a6; --accent-soft: rgba(45, 212, 191, 0.12); --accent-border: rgba(45, 212, 191, 0.35); --accent-contrast: #080c0b;
+}
+
+/* 14. «Dracula Orchid» */
+[data-theme="dracula_orchid"] {
+  --bg-main: #0c0a0f; --bg-card: #16131c; --bg-elevated: #211c2a; --bg-input: #0f0d12;
+  --border-color: #282233; --border-hover: #3e344e;
+  --accent: #c084fc; --accent-hover: #a855f7; --accent-soft: rgba(192, 132, 252, 0.12); --accent-border: rgba(192, 132, 252, 0.35); --accent-contrast: #0c0a0f;
+}
+
+/* 15. «Copper Rust» */
+[data-theme="copper_rust"] {
+  --bg-main: #0c0a09; --bg-card: #171311; --bg-elevated: #231c1a; --bg-input: #0f0d0c;
+  --border-color: #2b2320; --border-hover: #423632;
+  --accent: #ea580c; --accent-hover: #c2410c; --accent-soft: rgba(234, 88, 12, 0.12); --accent-border: rgba(234, 88, 12, 0.35); --accent-contrast: #ffffff;
+}
+
+/* 16. «Electric Indigo» */
+[data-theme="electric_indigo"] {
+  --bg-main: #090910; --bg-card: #12121f; --bg-elevated: #1b1b2f; --bg-input: #0b0b14;
+  --border-color: #212138; --border-hover: #343457;
+  --accent: #6366f1; --accent-hover: #4f46e5; --accent-soft: rgba(99, 102, 241, 0.12); --accent-border: rgba(99, 102, 241, 0.35); --accent-contrast: #ffffff;
+}
+
+/* 17. «Espresso Cream» */
+[data-theme="espresso_cream"] {
+  --bg-main: #0e0c0a; --bg-card: #181512; --bg-elevated: #25201b; --bg-input: #110f0d;
+  --border-color: #2e2822; --border-hover: #473d34;
+  --accent: #e6ccb2; --accent-hover: #d2b496; --accent-soft: rgba(230, 204, 178, 0.12); --accent-border: rgba(230, 204, 178, 0.35); --accent-contrast: #0e0c0a;
+}
+
+/* 18. «Cyberpunk 2077» */
+[data-theme="cyberpunk_2077"] {
+  --bg-main: #0a0a0c; --bg-card: #141418; --bg-elevated: #1e1e24; --bg-input: #0c0c0f;
+  --border-color: #272730; --border-hover: #3d3d4b;
+  --accent: #facc15; --accent-hover: #eab308; --accent-soft: rgba(250, 204, 21, 0.12); --accent-border: rgba(250, 204, 21, 0.35); --accent-contrast: #0a0a0c;
 }
 
 /* ==========================================================================
@@ -112,7 +154,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ПРАВКА 1: Убрано ограничение max-width, сделано на всю ширину экрана с отступами по 24px */
 .container {
   width: 100%;
   max-width: 100%;
@@ -292,7 +333,6 @@ code {
   flex-wrap: wrap;
 }
 
-/* Панель редактора */
 .editor-toolbar {
   background: var(--bg-elevated);
   border-top: 1px solid var(--accent-border);
@@ -468,7 +508,6 @@ code {
   padding-bottom: 60px;
 }
 
-/* ПРАВКА 1: Сайдбар фиксированной ширины слева, правая область тянется на 100% */
 .full-layout {
   display: grid;
   grid-template-columns: 310px 1fr;
@@ -560,7 +599,7 @@ code {
 }
 
 /* ==========================================================================
-   ПРАВКА 2: ВИДИМЫЙ ТРЕК И ЦВЕТНАЯ ЗАЛИВКА ДВОЙНОГО СЛАЙДЕРА
+   ДВОЙНОЙ СЛАЙДЕР С ВИДИМЫМ ТРЕКОМ
    ========================================================================== */
 .slider-inputs-group {
   margin-top: 6px;
@@ -576,7 +615,6 @@ code {
   align-items: center;
 }
 
-/* Неактивный фон трека (тёмно-серый) */
 .slider-track-bg {
   position: absolute;
   left: 0;
@@ -587,7 +625,6 @@ code {
   z-index: 1;
 }
 
-/* Активный отрезок между ползунками (динамически закрашивается в --accent) */
 .slider-track-fill {
   position: absolute;
   height: 5px;
@@ -672,7 +709,6 @@ code {
   font-size: 0.8rem;
 }
 
-/* Правая область с карточками на всю ширину */
 .builds-main-content {
   display: flex;
   flex-direction: column;

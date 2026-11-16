@@ -19,7 +19,7 @@
           type="password" 
           id="auth-password" 
           class="tactical-input" 
-          placeholder="Пароль доступа (по умолчанию: 1234)" 
+          placeholder="Введите пароль" 
           autocomplete="current-password"
           required
         >
@@ -49,14 +49,28 @@
           <button class="nav-tab" data-tab="gear">Снаряжение и Карты</button>
         </nav>
 
-        <!-- Правая панель: Тема, Сортировка и Режим редактора -->
+        <!-- Правая панель: 18 тем, Сортировка и Режим редактора -->
         <div class="header-controls">
           <div class="theme-switcher">
             <select id="theme-select" class="tactical-select" title="Выбор цветовой темы">
-              <option value="gold">ABI Gold</option>
-              <option value="graphite">Stealth Graphite</option>
-              <option value="crimson">Crimson Raid</option>
-              <option value="nightvision">Night Vision</option>
+              <option value="gold">ABI Gold (Золото)</option>
+              <option value="crimson">Crimson Raid (Вишнёвый)</option>
+              <option value="nightvision">Night Vision (ПНВ Изумруд)</option>
+              <option value="tactical_orange">Tactical Orange (Оранжевый)</option>
+              <option value="cyber_violet">Cyber Violet (Фиолетовый)</option>
+              <option value="arctic_cyan">Arctic Cyan (Бирюзовый)</option>
+              <option value="desert_coyote">Desert Coyote (Песочный)</option>
+              <option value="toxic_amber">Toxic Amber (Медно-янтарный)</option>
+              <option value="sakura_night">Sakura Night (Розовый графит)</option>
+              <option value="royal_cobalt">Royal Cobalt (Сапфировый)</option>
+              <option value="lime_strike">Lime Strike (Лаймовый)</option>
+              <option value="sunset_coral">Sunset Coral (Коралловый)</option>
+              <option value="mint_matrix">Mint Matrix (Мятный)</option>
+              <option value="dracula_orchid">Dracula Orchid (Лавандовый)</option>
+              <option value="copper_rust">Copper Rust (Терракотовый)</option>
+              <option value="electric_indigo">Electric Indigo (Индиго)</option>
+              <option value="espresso_cream">Espresso Cream (Кремовый)</option>
+              <option value="cyberpunk_2077">Cyberpunk 2077 (Киберпанк)</option>
             </select>
           </div>
 
@@ -109,7 +123,7 @@
             <button id="reset-filters-btn" class="btn btn-secondary btn-sm">Сбросить</button>
           </div>
 
-          <!-- Поиск (Правка 3: короткий плейсхолдер) -->
+          <!-- Поиск -->
           <div class="filter-block">
             <label class="filter-label" for="search-input">Поиск</label>
             <input 
@@ -120,7 +134,7 @@
             >
           </div>
 
-          <!-- Бюджет: Кнопки-диапазоны + Двойной ползунок (Правка 2: видимый трек) + От / До -->
+          <!-- Бюджет: Кнопки-диапазоны + Двойной ползунок + От / До -->
           <div class="filter-block">
             <div class="budget-header-row">
               <label class="filter-label">Бюджет (коэны)</label>
