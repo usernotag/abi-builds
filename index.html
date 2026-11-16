@@ -53,24 +53,24 @@
         <div class="header-controls">
           <div class="theme-switcher">
             <select id="theme-select" class="tactical-select" title="Выбор цветовой темы">
-              <option value="gold">ABI Gold (Золото)</option>
-              <option value="crimson">Crimson Raid (Вишнёвый)</option>
-              <option value="nightvision">Night Vision (ПНВ Изумруд)</option>
-              <option value="tactical_orange">Tactical Orange (Оранжевый)</option>
-              <option value="cyber_violet">Cyber Violet (Фиолетовый)</option>
-              <option value="arctic_cyan">Arctic Cyan (Бирюзовый)</option>
+              <option value="gold">Sovereign Gold (Золото)</option>
+              <option value="crimson">Crimson Raid (Багровый)</option>
+              <option value="nightvision">Green Phosphorus (ПНВ Изумруд)</option>
+              <option value="tactical_orange">Sector Orange (Оранжевый)</option>
+              <option value="cyber_violet">Void Violet (Фиолетовый)</option>
+              <option value="arctic_cyan">Arctic Frost (Арктический)</option>
               <option value="desert_coyote">Desert Coyote (Песочный)</option>
-              <option value="toxic_amber">Toxic Amber (Медно-янтарный)</option>
-              <option value="sakura_night">Sakura Night (Розовый графит)</option>
+              <option value="toxic_amber">Thermal Amber (Янтарный)</option>
+              <option value="sakura_night">Neon Blossom (Неоновый)</option>
               <option value="royal_cobalt">Royal Cobalt (Сапфировый)</option>
-              <option value="lime_strike">Lime Strike (Лаймовый)</option>
-              <option value="sunset_coral">Sunset Coral (Коралловый)</option>
-              <option value="mint_matrix">Mint Matrix (Мятный)</option>
-              <option value="dracula_orchid">Dracula Orchid (Лавандовый)</option>
-              <option value="copper_rust">Copper Rust (Терракотовый)</option>
-              <option value="electric_indigo">Electric Indigo (Индиго)</option>
-              <option value="espresso_cream">Espresso Cream (Кремовый)</option>
-              <option value="cyberpunk_2077">Cyberpunk 2077 (Киберпанк)</option>
+              <option value="lime_strike">Matrix Lime (Лаймовый)</option>
+              <option value="sunset_coral">Dusk Coral (Коралловый)</option>
+              <option value="mint_matrix">Cyber Mint (Мятный)</option>
+              <option value="dracula_orchid">Midnight Orchid (Лавандовый)</option>
+              <option value="copper_rust">Oxidized Bronze (Бронзовый)</option>
+              <option value="electric_indigo">Deep Indigo (Индиго)</option>
+              <option value="espresso_cream">Tactical Tan (Кремовый)</option>
+              <option value="cyberpunk_2077">Volt Yellow (Вольтовый)</option>
             </select>
           </div>
 
@@ -208,45 +208,80 @@
 
       <!-- ВКЛАДКА 2: СНАРЯЖЕНИЕ И КАРТЫ -->
       <section id="tab-gear" class="tab-section hidden">
+        
+        <!-- БЛОК БАЛЛИСТИКИ (ЗАГЛУШКА) -->
         <div class="section-block">
           <div class="section-header">
             <div>
-              <h2 class="section-title">ИНТЕРАКТИВНЫЕ КАРТЫ И СПРАВОЧНИКИ</h2>
-              <p class="section-desc">Ссылки на интерактивные карты, баллистику и таблицы пробития брони</p>
+              <h2 class="section-title">БАЛЛИСТИКА И ТАБЛИЦЫ ПРОБИТИЯ</h2>
+              <p class="section-desc">Актуальные данные по урону патронов и бронепробитию</p>
             </div>
           </div>
-
-          <div class="links-grid">
-            <a href="#" target="_blank" rel="noopener noreferrer" class="resource-card">
-              <span class="resource-tag">КАРТА ЛОКАЦИИ</span>
-              <h3 class="resource-title">Ферма (Farm)</h3>
-              <p class="resource-desc">Спавны ЧВК, сейфы в Мотеле и выходы.</p>
-              <span class="resource-link-text">Открыть карту ↗</span>
-            </a>
-
-            <a href="#" target="_blank" rel="noopener noreferrer" class="resource-card">
-              <span class="resource-tag">КАРТА ЛОКАЦИИ</span>
-              <h3 class="resource-title">Долина (Valley)</h3>
-              <p class="resource-desc">Вилла, завод и снайперские позиции.</p>
-              <span class="resource-link-text">Открыть карту ↗</span>
-            </a>
-
-            <a href="#" target="_blank" rel="noopener noreferrer" class="resource-card">
-              <span class="resource-tag">КАРТА ЛОКАЦИИ</span>
-              <h3 class="resource-title">Нортридж (Northridge)</h3>
-              <p class="resource-desc">Отель, лесопилка и точки эвакуации.</p>
-              <span class="resource-link-text">Открыть карту ↗</span>
-            </a>
-
-            <a href="#" target="_blank" rel="noopener noreferrer" class="resource-card">
-              <span class="resource-tag">БАЛЛИСТИКА</span>
-              <h3 class="resource-title">Таблица патронов и пробития</h3>
-              <p class="resource-desc">Актуальный урон и пробитие брони 1–6 класса.</p>
-              <span class="resource-link-text">Открыть таблицу ↗</span>
+          <div class="links-grid single-card-grid">
+            <a href="https://arenainfinite.help" target="_blank" rel="noopener noreferrer" class="resource-card ballistic-highlight-card">
+              <span class="resource-tag">СПРАВОЧНИК УРОНА</span>
+              <h3 class="resource-title">Таблица патронов и пробития брони</h3>
+              <p class="resource-desc">Скоро появится полная таблица баллистики и урона по классам защиты.</p>
+              <span class="resource-link-text">Открыть общий справочник ↗</span>
             </a>
           </div>
         </div>
 
+        <!-- ИНТЕРАКТИВНЫЕ КАРТЫ (С ТВОИМИ ССЫЛКАМИ) -->
+        <div class="section-block">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">ИНТЕРАКТИВНЫЕ КАРТЫ ЛОКАЦИЙ</h2>
+              <p class="section-desc">Интерактивные карты со спавнами ЧВК, сейфами и выходами</p>
+            </div>
+          </div>
+
+          <div class="links-grid">
+            <a href="https://arenainfinite.help/maps/158?layer=281&difficulty=easy" target="_blank" rel="noopener noreferrer" class="resource-card">
+              <span class="resource-tag">КАРТА ЛОКАЦИИ</span>
+              <h3 class="resource-title">Ферма (Farm)</h3>
+              <p class="resource-desc">Спавны ЧВК, сейфы в Мотеле, тайники и выходы.</p>
+              <span class="resource-link-text">Открыть карту ↗</span>
+            </a>
+
+            <a href="https://arenainfinite.help/maps/91?layer=187&difficulty=easy" target="_blank" rel="noopener noreferrer" class="resource-card">
+              <span class="resource-tag">КАРТА ЛОКАЦИИ</span>
+              <h3 class="resource-title">Долина (Valley)</h3>
+              <p class="resource-desc">Вилла, завод, снайперские позиции и выходы.</p>
+              <span class="resource-link-text">Открыть карту ↗</span>
+            </a>
+
+            <a href="https://arenainfinite.help/maps/92?layer=188&difficulty=easy" target="_blank" rel="noopener noreferrer" class="resource-card">
+              <span class="resource-tag">КАРТА ЛОКАЦИИ</span>
+              <h3 class="resource-title">Арсенал (Arsenal)</h3>
+              <p class="resource-desc">Планы этажей, рычаги эвакуации и спавны рейдеров.</p>
+              <span class="resource-link-text">Открыть карту ↗</span>
+            </a>
+
+            <a href="https://arenainfinite.help/maps/131?layer=239&difficulty=easy" target="_blank" rel="noopener noreferrer" class="resource-card">
+              <span class="resource-tag">КАРТА ЛОКАЦИИ</span>
+              <h3 class="resource-title">Телецентр (TV Station)</h3>
+              <p class="resource-desc">Закрытые зоны, серверные комнаты и ключевой лут.</p>
+              <span class="resource-link-text">Открыть карту ↗</span>
+            </a>
+
+            <a href="https://arenainfinite.help/maps/131?layer=239&difficulty=easy" target="_blank" rel="noopener noreferrer" class="resource-card">
+              <span class="resource-tag">КАРТА ЛОКАЦИИ</span>
+              <h3 class="resource-title">Зимний Нортридж (Winter Northridge)</h3>
+              <p class="resource-desc">Заснеженный отель, канатка, лесопилка и выходы.</p>
+              <span class="resource-link-text">Открыть карту ↗</span>
+            </a>
+
+            <a href="https://arenainfinite.help/maps/159?layer=282&difficulty=easy" target="_blank" rel="noopener noreferrer" class="resource-card">
+              <span class="resource-tag">КАРТА ЛОКАЦИИ</span>
+              <h3 class="resource-title">Аэропорт (Airport)</h3>
+              <p class="resource-desc">Ангары, терминалы, открытые споты и эвакуации.</p>
+              <span class="resource-link-text">Открыть карту ↗</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- ШПАРГАЛКА ПО ШЛЕМАМ И БРОНЕЖИЛЕТАМ -->
         <div class="section-block">
           <div class="section-header">
             <div>
@@ -262,6 +297,7 @@
 
           <div id="gear-grid" class="gear-grid"></div>
         </div>
+
       </section>
     </main>
   </div>

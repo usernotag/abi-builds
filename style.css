@@ -2,7 +2,7 @@
    ЦВЕТОВЫЕ ТЕМЫ (18 ТЁМНЫХ ПАЛИТР С КОНТРАСТНЫМИ КАРТОЧКАМИ И КНОПКАМИ)
    ========================================================================== */
 
-/* 1. «ABI Gold» (По умолчанию) */
+/* 1. «Sovereign Gold» (По умолчанию) */
 :root, [data-theme="gold"] {
   --bg-main: #0b0c0e; --bg-card: #14171d; --bg-elevated: #1d212a; --bg-input: #0e1014;
   --text-main: #e4e4e7; --text-muted: #9f9fa6; --text-dim: #71717a;
@@ -24,28 +24,28 @@
   --accent: #e11d48; --accent-hover: #be123c; --accent-soft: rgba(225, 29, 72, 0.12); --accent-border: rgba(225, 29, 72, 0.35); --accent-contrast: #ffffff;
 }
 
-/* 3. «Night Vision» */
+/* 3. «Green Phosphorus» */
 [data-theme="nightvision"] {
   --bg-main: #080b0a; --bg-card: #121917; --bg-elevated: #1a2522; --bg-input: #0a0e0d;
   --border-color: #22302b; --border-hover: #364d44;
   --accent: #10b981; --accent-hover: #059669; --accent-soft: rgba(16, 185, 129, 0.12); --accent-border: rgba(16, 185, 129, 0.35); --accent-contrast: #080b0a;
 }
 
-/* 4. «Tactical Orange» */
+/* 4. «Sector Orange» */
 [data-theme="tactical_orange"] {
   --bg-main: #09090b; --bg-card: #141518; --bg-elevated: #1e2025; --bg-input: #0b0c0e;
   --border-color: #272930; --border-hover: #3e424d;
   --accent: #f97316; --accent-hover: #ea580c; --accent-soft: rgba(249, 115, 22, 0.12); --accent-border: rgba(249, 115, 22, 0.35); --accent-contrast: #ffffff;
 }
 
-/* 5. «Cyber Violet» */
+/* 5. «Void Violet» */
 [data-theme="cyber_violet"] {
   --bg-main: #0b0a10; --bg-card: #14131c; --bg-elevated: #1d1b28; --bg-input: #0e0d13;
   --border-color: #262436; --border-hover: #3a3752;
   --accent: #8b5cf6; --accent-hover: #7c3aed; --accent-soft: rgba(139, 92, 246, 0.12); --accent-border: rgba(139, 92, 246, 0.35); --accent-contrast: #ffffff;
 }
 
-/* 6. «Arctic Cyan» */
+/* 6. «Arctic Frost» */
 [data-theme="arctic_cyan"] {
   --bg-main: #0a0d0f; --bg-card: #12171b; --bg-elevated: #1a2228; --bg-input: #0d1013;
   --border-color: #212b33; --border-hover: #334350;
@@ -59,14 +59,14 @@
   --accent: #c29b61; --accent-hover: #ab834a; --accent-soft: rgba(194, 155, 97, 0.12); --accent-border: rgba(194, 155, 97, 0.35); --accent-contrast: #0d0c0a;
 }
 
-/* 8. «Toxic Amber» */
+/* 8. «Thermal Amber» */
 [data-theme="toxic_amber"] {
   --bg-main: #0a0908; --bg-card: #151311; --bg-elevated: #201c18; --bg-input: #0c0b0a;
   --border-color: #292521; --border-hover: #403833;
   --accent: #f59e0b; --accent-hover: #d97706; --accent-soft: rgba(245, 158, 11, 0.12); --accent-border: rgba(245, 158, 11, 0.35); --accent-contrast: #0a0908;
 }
 
-/* 9. «Sakura Night» */
+/* 9. «Neon Blossom» */
 [data-theme="sakura_night"] {
   --bg-main: #0d0a0c; --bg-card: #171216; --bg-elevated: #231a20; --bg-input: #100c0e;
   --border-color: #2c2229; --border-hover: #443540;
@@ -80,56 +80,56 @@
   --accent: #3b82f6; --accent-hover: #2563eb; --accent-soft: rgba(59, 130, 246, 0.12); --accent-border: rgba(59, 130, 246, 0.35); --accent-contrast: #ffffff;
 }
 
-/* 11. «Lime Strike» */
+/* 11. «Matrix Lime» */
 [data-theme="lime_strike"] {
   --bg-main: #0a0c09; --bg-card: #131711; --bg-elevated: #1c221a; --bg-input: #0c0f0b;
   --border-color: #232b1f; --border-hover: #364230;
   --accent: #84cc16; --accent-hover: #65a30d; --accent-soft: rgba(132, 204, 22, 0.12); --accent-border: rgba(132, 204, 22, 0.35); --accent-contrast: #0a0c09;
 }
 
-/* 12. «Sunset Coral» */
+/* 12. «Dusk Coral» */
 [data-theme="sunset_coral"] {
   --bg-main: #0e0a0a; --bg-card: #191212; --bg-elevated: #261b1b; --bg-input: #110d0d;
   --border-color: #2e2121; --border-hover: #473333;
   --accent: #fb7185; --accent-hover: #f43f5e; --accent-soft: rgba(251, 113, 133, 0.12); --accent-border: rgba(251, 113, 133, 0.35); --accent-contrast: #0e0a0a;
 }
 
-/* 13. «Mint Matrix» */
+/* 13. «Cyber Mint» */
 [data-theme="mint_matrix"] {
   --bg-main: #080c0b; --bg-card: #101715; --bg-elevated: #182321; --bg-input: #0b0f0e;
   --border-color: #1d2b27; --border-hover: #2e433d;
   --accent: #2dd4bf; --accent-hover: #14b8a6; --accent-soft: rgba(45, 212, 191, 0.12); --accent-border: rgba(45, 212, 191, 0.35); --accent-contrast: #080c0b;
 }
 
-/* 14. «Dracula Orchid» */
+/* 14. «Midnight Orchid» */
 [data-theme="dracula_orchid"] {
   --bg-main: #0c0a0f; --bg-card: #16131c; --bg-elevated: #211c2a; --bg-input: #0f0d12;
   --border-color: #282233; --border-hover: #3e344e;
   --accent: #c084fc; --accent-hover: #a855f7; --accent-soft: rgba(192, 132, 252, 0.12); --accent-border: rgba(192, 132, 252, 0.35); --accent-contrast: #0c0a0f;
 }
 
-/* 15. «Copper Rust» */
+/* 15. «Oxidized Bronze» */
 [data-theme="copper_rust"] {
   --bg-main: #0c0a09; --bg-card: #171311; --bg-elevated: #231c1a; --bg-input: #0f0d0c;
   --border-color: #2b2320; --border-hover: #423632;
   --accent: #ea580c; --accent-hover: #c2410c; --accent-soft: rgba(234, 88, 12, 0.12); --accent-border: rgba(234, 88, 12, 0.35); --accent-contrast: #ffffff;
 }
 
-/* 16. «Electric Indigo» */
+/* 16. «Deep Indigo» */
 [data-theme="electric_indigo"] {
   --bg-main: #090910; --bg-card: #12121f; --bg-elevated: #1b1b2f; --bg-input: #0b0b14;
   --border-color: #212138; --border-hover: #343457;
   --accent: #6366f1; --accent-hover: #4f46e5; --accent-soft: rgba(99, 102, 241, 0.12); --accent-border: rgba(99, 102, 241, 0.35); --accent-contrast: #ffffff;
 }
 
-/* 17. «Espresso Cream» */
+/* 17. «Tactical Tan» */
 [data-theme="espresso_cream"] {
   --bg-main: #0e0c0a; --bg-card: #181512; --bg-elevated: #25201b; --bg-input: #110f0d;
   --border-color: #2e2822; --border-hover: #473d34;
   --accent: #e6ccb2; --accent-hover: #d2b496; --accent-soft: rgba(230, 204, 178, 0.12); --accent-border: rgba(230, 204, 178, 0.35); --accent-contrast: #0e0c0a;
 }
 
-/* 18. «Cyberpunk 2077» */
+/* 18. «Volt Yellow» */
 [data-theme="cyberpunk_2077"] {
   --bg-main: #0a0a0c; --bg-card: #141418; --bg-elevated: #1e1e24; --bg-input: #0c0c0f;
   --border-color: #272730; --border-hover: #3d3d4b;
@@ -941,6 +941,10 @@ code {
   width: 100%;
 }
 
+.single-card-grid {
+  grid-template-columns: 1fr;
+}
+
 .resource-card, .gear-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -957,6 +961,11 @@ code {
 .resource-card:hover {
   border-color: var(--accent);
   transform: translateY(-2px);
+}
+
+.ballistic-highlight-card {
+  border-left: 4px solid var(--accent);
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elevated) 100%);
 }
 
 .resource-tag {

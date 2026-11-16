@@ -1,6 +1,6 @@
 /**
  * НАСТРОЙКИ ПРИЛОЖЕНИЯ И БЕЗОПАСНОСТИ
- * Прямая проверка пароля (без SHA-256 и проблем с протоколом file://)
+ * Пароль доступа: 1337228
  */
 
 const REQUIRE_PASSWORD = true;
@@ -111,7 +111,6 @@ function initAuth() {
     e.preventDefault();
     const enteredPassword = passInput.value;
 
-    // Прямое сравнение введённой строки с ACCESS_PASSWORD
     if (enteredPassword.trim() === ACCESS_PASSWORD) {
       sessionStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_SESSION, "true");
       errorMsg.classList.add("hidden");
