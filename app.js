@@ -1,12 +1,12 @@
 /**
  * НАСТРОЙКИ ПРИЛОЖЕНИЯ И БЕЗОПАСНОСТИ
- * Пароль доступа: 1337228 (хеш SHA-256)
+ * Прямая проверка пароля (без SHA-256 и проблем с протоколом file://)
  */
 
 const REQUIRE_PASSWORD = true;
+const ACCESS_PASSWORD = "1337228";
 
 const CONFIG = {
-  PASSWORD_HASH: "a835a30164e97c31144be99d4a652ef987a53c8b28863535f4a53d914275852b",
   STORAGE_KEYS: {
     AUTH_SESSION: "abi_auth_v2",
     THEME: "abi_theme",
@@ -29,18 +29,6 @@ const state = {
     gearType: "all",
     sort: "default"
   }
-};
-
-async function sha256(text) {
-  const msgBuffer = new TextEncoder().encode(text);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
-}
-
-window.generatePasswordHash = async function(plainPassword) {
-  const hash = await sha256(plainPassword);
-  console.log(`Пароль: "${plainPassword}"\nSHA-256 Хеш: ${hash}`);
-  return hash;
 };
 
 function formatKoens(num) {
@@ -119,10 +107,12 @@ function initAuth() {
     return;
   }
 
-  authForm.addEventListener("submit", async (e) => {
+  authForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const enteredHash = await sha256(passInput.value.trim());
-    if (enteredHash === CONFIG.PASSWORD_HASH.toLowerCase()) {
+    const enteredPassword = passInput.value;
+
+    // Прямое сравнение введённой строки с ACCESS_PASSWORD
+    if (enteredPassword.trim() === ACCESS_PASSWORD) {
       sessionStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_SESSION, "true");
       errorMsg.classList.add("hidden");
       unlock();
