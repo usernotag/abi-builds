@@ -1,40 +1,19 @@
 /**
- * ============================================================================
  * НАСТРОЙКИ ПРИЛОЖЕНИЯ И БЕЗОПАСНОСТИ
- * ============================================================================
- * 
- * КАК СГЕНЕРИРОВАТЬ SHA-256 ХЕШ ДЛЯ СВОЕГО ПАРОЛЯ:
- * Способ 1 (прямо в браузере на этом сайте):
- *   Откройте консоль разработчика (F12 -> Console) и выполните команду:
- *   await generatePasswordHash("ваш_новый_пароль")
- *   Скопируйте полученную строку и вставьте её в PASSWORD_HASH ниже.
- * 
- * Способ 2 (в одну строку в любой вкладке браузера F12):
- *   Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('ваш_пароль')))).map(b => b.toString(16).padStart(2, '0')).join('')
- * 
- * По умолчанию установлен пароль: 1234
+ * SHA-256 хеш пароля "1234" по умолчанию
  */
 
-const REQUIRE_PASSWORD = true; // Установите false, чтобы отключить запрос пароля при входе
+const REQUIRE_PASSWORD = true;
 
 const CONFIG = {
-  // SHA-256 хеш пароля "1234"
   PASSWORD_HASH: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-
-  // Пороги цен в коэнах для автоматического определения категории бюджета
-  PRICE_THRESHOLDS: {
-    cheapMax: 300000,   // До 300 000 — Дешёвые
-    mediumMax: 500000   // 300 000 – 500 000 — Средние, свыше 500 000 — Дорогие
-  },
-
   STORAGE_KEYS: {
     AUTH_SESSION: "abi_auth_unlocked",
     THEME: "abi_theme",
-    LOCAL_DATA: "abi_local_db_v1"
+    LOCAL_DATA: "abi_local_db_v2"
   }
 };
 
-// Состояние приложения
 const state = {
   builds: [],
   gear: [],
@@ -42,25 +21,22 @@ const state = {
   hasLocalChanges: false,
   filters: {
     search: "",
-    budget: "all",
+    priceMin: 0,
+    priceMax: 2000000,
+    activeRange: "all",
     effClass: "all",
     zone: "all",
-    gearType: "all"
+    gearType: "all",
+    sort: "default"
   }
 };
-
-// ============================================================================
-// УТИЛИТЫ И КРИПТОГРАФИЯ
-// ============================================================================
 
 async function sha256(text) {
   const msgBuffer = new TextEncoder().encode(text);
   const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-// Глобальная функция для удобной генерации хеша через консоль (F12)
 window.generatePasswordHash = async function(plainPassword) {
   const hash = await sha256(plainPassword);
   console.log(`Пароль: "${plainPassword}"\nSHA-256 Хеш: ${hash}`);
@@ -81,34 +57,36 @@ function escapeHtml(str) {
     .replace(/'/g, "&#039;");
 }
 
-function getBudgetCategory(price, manualOverride = "auto") {
-  if (manualOverride && manualOverride !== "auto") {
-    return manualOverride;
-  }
-  const numPrice = Number(price) || 0;
-  if (numPrice <= CONFIG.PRICE_THRESHOLDS.cheapMax) return "cheap";
-  if (numPrice <= CONFIG.PRICE_THRESHOLDS.mediumMax) return "medium";
-  return "expensive";
-}
-
 function showToast(message) {
   const container = document.getElementById("toast-container");
   const toast = document.createElement("div");
   toast.className = "toast";
   toast.textContent = message;
   container.appendChild(toast);
-
-  setTimeout(() => {
-    toast.remove();
-  }, 2800);
+  setTimeout(() => toast.remove(), 2600);
 }
 
-// ============================================================================
-// АВТОРИЗАЦИЯ И ТЕМЫ
-// ============================================================================
+function getBudgetBadgeInfo(price, manualMode = "auto") {
+  const p = Number(price) || 0;
+  if (manualMode && manualMode !== "auto") {
+    switch (manualMode) {
+      case "range_1": return { text: "До 150к", cls: "badge-white" };
+      case "range_2": return { text: "150–280к", cls: "badge-green" };
+      case "range_3": return { text: "280–400к", cls: "badge-yellow" };
+      case "range_4": return { text: "400–650к", cls: "badge-yellow" };
+      case "range_5": return { text: "650к+", cls: "badge-red" };
+    }
+  }
+  if (p <= 150000) return { text: "До 150к", cls: "badge-white" };
+  if (p <= 280000) return { text: "150–280к", cls: "badge-green" };
+  if (p <= 400000) return { text: "280–400к", cls: "badge-yellow" };
+  if (p <= 650000) return { text: "400–650к", cls: "badge-yellow" };
+  return { text: "650к+", cls: "badge-red" };
+}
 
+// Темы
 function initTheme() {
-  const savedTheme = localStorage.getItem(CONFIG.STORAGE_KEYS.THEME) || "amber";
+  const savedTheme = localStorage.getItem(CONFIG.STORAGE_KEYS.THEME) || "gold";
   document.documentElement.setAttribute("data-theme", savedTheme);
   const select = document.getElementById("theme-select");
   if (select) {
@@ -117,6 +95,7 @@ function initTheme() {
       const newTheme = e.target.value;
       document.documentElement.setAttribute("data-theme", newTheme);
       localStorage.setItem(CONFIG.STORAGE_KEYS.THEME, newTheme);
+      updateSliderTrackFill();
     });
   }
 }
@@ -128,14 +107,15 @@ function initAuth() {
   const passInput = document.getElementById("auth-password");
   const errorMsg = document.getElementById("auth-error");
 
-  const unlockApp = () => {
+  const unlock = () => {
     overlay.classList.add("hidden");
     appWrapper.classList.remove("hidden");
     loadDatabase();
+    updateSliderTrackFill();
   };
 
   if (!REQUIRE_PASSWORD || sessionStorage.getItem(CONFIG.STORAGE_KEYS.AUTH_SESSION) === "true") {
-    unlockApp();
+    unlock();
     return;
   }
 
@@ -145,7 +125,7 @@ function initAuth() {
     if (enteredHash === CONFIG.PASSWORD_HASH.toLowerCase()) {
       sessionStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_SESSION, "true");
       errorMsg.classList.add("hidden");
-      unlockApp();
+      unlock();
     } else {
       errorMsg.classList.remove("hidden");
       passInput.value = "";
@@ -154,13 +134,8 @@ function initAuth() {
   });
 }
 
-// ============================================================================
-// ЗАГРУЗКА И СОХРАНЕНИЕ ДАННЫХ (builds.json + localStorage)
-// ============================================================================
-
+// Загрузка данных
 async function loadDatabase() {
-  updateFilterThresholdLabels();
-
   const localRaw = localStorage.getItem(CONFIG.STORAGE_KEYS.LOCAL_DATA);
   if (localRaw) {
     try {
@@ -169,45 +144,34 @@ async function loadDatabase() {
       renderAll();
       return;
     } catch (e) {
-      console.error("Ошибка чтения localStorage, загружаем builds.json", e);
+      console.error("Ошибка чтения localStorage", e);
     }
   }
-
   await fetchFromServerJson();
 }
 
 async function fetchFromServerJson() {
   try {
-    const response = await fetch(`builds.json?t=${Date.now()}`);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = await response.json();
+    const res = await fetch(`builds.json?t=${Date.now()}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
     applyDataToState(data, false);
   } catch (err) {
-    console.warn("Не удалось загрузить builds.json:", err);
-    showToast("Внимание: builds.json недоступен, открыта пустая база");
+    console.warn("builds.json недоступен", err);
     applyDataToState({ builds: [], gear: [] }, false);
   }
   renderAll();
 }
 
-function applyDataToState(data, isFromLocal) {
-  if (Array.isArray(data)) {
-    state.builds = data;
-    state.gear = [];
-  } else {
-    state.builds = Array.isArray(data.builds) ? data.builds : [];
-    state.gear = Array.isArray(data.gear) ? data.gear : [];
-  }
-  state.hasLocalChanges = isFromLocal;
+function applyDataToState(data, isLocal) {
+  state.builds = Array.isArray(data.builds) ? data.builds : [];
+  state.gear = Array.isArray(data.gear) ? data.gear : [];
+  state.hasLocalChanges = isLocal;
   updateStorageStatusUI();
 }
 
 function saveToLocalStorage() {
-  const payload = {
-    updatedAt: new Date().toISOString(),
-    builds: state.builds,
-    gear: state.gear
-  };
+  const payload = { updatedAt: new Date().toISOString(), builds: state.builds, gear: state.gear };
   localStorage.setItem(CONFIG.STORAGE_KEYS.LOCAL_DATA, JSON.stringify(payload));
   state.hasLocalChanges = true;
   updateStorageStatusUI();
@@ -217,33 +181,35 @@ function updateStorageStatusUI() {
   const statusEl = document.getElementById("storage-status");
   if (!statusEl) return;
   if (state.hasLocalChanges) {
-    statusEl.textContent = "Локальные изменения сохранены в браузере (скачайте builds.json для GitHub)";
+    statusEl.textContent = "Локальные изменения в браузере (скачайте builds.json для GitHub)";
     statusEl.classList.add("modified");
   } else {
-    statusEl.textContent = "Данные синхронизированы с серверным builds.json";
+    statusEl.textContent = "Данные синхронизированы с builds.json";
     statusEl.classList.remove("modified");
   }
 }
 
-function updateFilterThresholdLabels() {
-  const cheapFmt = (CONFIG.PRICE_THRESHOLDS.cheapMax / 1000).toFixed(0) + " 000";
-  const medFmt = (CONFIG.PRICE_THRESHOLDS.mediumMax / 1000).toFixed(0) + " 000";
+// Обновление визуальной заливки трека двойного слайдера
+function updateSliderTrackFill() {
+  const sliderMin = document.getElementById("price-slider-min");
+  const sliderMax = document.getElementById("price-slider-max");
+  const trackFill = document.getElementById("slider-track-fill");
+  if (!sliderMin || !sliderMax || !trackFill) return;
 
-  document.getElementById("pill-cheap-label").textContent = `Дешёвые (до ${cheapFmt})`;
-  document.getElementById("pill-medium-label").textContent = `Средние (${cheapFmt} – ${medFmt})`;
-  document.getElementById("pill-expensive-label").textContent = `Дорогие (от ${medFmt}+)`;
+  const minVal = Number(sliderMin.value);
+  const maxVal = Number(sliderMax.value);
+  const minLimit = Number(sliderMin.min) || 0;
+  const maxLimit = Number(sliderMin.max) || 2000000;
+
+  const leftPercent = ((minVal - minLimit) / (maxLimit - minLimit)) * 100;
+  const rightPercent = ((maxVal - minLimit) / (maxLimit - minLimit)) * 100;
+
+  trackFill.style.left = leftPercent + "%";
+  trackFill.style.width = (rightPercent - leftPercent) + "%";
 }
 
-// ============================================================================
-// ОТРИСОВКА СБОРОК И СНАРЯЖЕНИЯ
-// ============================================================================
-
+// Рендеринг
 const BADGE_MAP = {
-  budget: {
-    cheap: { text: "Дешёвая", cls: "badge-green" },
-    medium: { text: "Средняя", cls: "badge-yellow" },
-    expensive: { text: "Дорогая", cls: "badge-red" }
-  },
   effClass: {
     min: { text: "Минималка", cls: "badge-white" },
     mid: { text: "Середняк", cls: "badge-yellow" },
@@ -255,9 +221,9 @@ const BADGE_MAP = {
     red: { text: "Красная (Запретка)", cls: "badge-red" }
   },
   gearStatus: {
-    green: { text: "Топ / Мета", cls: "badge-green" },
+    green: { text: "Топ за свои деньги", cls: "badge-green" },
     yellow: { text: "Рабочий вариант", cls: "badge-yellow" },
-    red: { text: "Ситуативно / Дорого", cls: "badge-red" }
+    red: { text: "Дорого / Ситуативно", cls: "badge-red" }
   }
 };
 
@@ -271,34 +237,37 @@ function renderBuilds() {
   const countEl = document.getElementById("builds-count");
   const query = state.filters.search.toLowerCase().trim();
 
-  const filtered = state.builds.filter((b) => {
-    const resolvedBudget = getBudgetCategory(b.price, b.budgetMode);
-
-    if (state.filters.budget !== "all" && resolvedBudget !== state.filters.budget) return false;
+  let filtered = state.builds.filter(b => {
+    const price = Number(b.price) || 0;
+    if (price < state.filters.priceMin || price > state.filters.priceMax) return false;
     if (state.filters.effClass !== "all" && b.effClass !== state.filters.effClass) return false;
     if (state.filters.zone !== "all" && b.zone !== state.filters.zone) return false;
-
     if (query) {
-      const haystack = `${b.weapon} ${b.caliber} ${b.ammo} ${b.notes || ""}`.toLowerCase();
-      if (!haystack.includes(query)) return false;
+      const text = `${b.weapon} ${b.caliber} ${b.ammo} ${b.notes || ""}`.toLowerCase();
+      if (!text.includes(query)) return false;
     }
     return true;
   });
 
+  if (state.filters.sort === "cheap-first") {
+    filtered.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
+  } else if (state.filters.sort === "expensive-first") {
+    filtered.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+  }
+
   countEl.textContent = filtered.length;
 
   if (filtered.length === 0) {
-    grid.innerHTML = `<div class="empty-state">Сборки по заданным критериям не найдены. Попробуйте сбросить фильтры.</div>`;
+    grid.innerHTML = `<div class="empty-state">База сборок пока пуста. Включите режим редактора, чтобы добавить первую сборку.</div>`;
     return;
   }
 
-  grid.innerHTML = filtered.map((b) => {
-    const resolvedBudget = getBudgetCategory(b.price, b.budgetMode);
-    const budgetBadge = BADGE_MAP.budget[resolvedBudget] || BADGE_MAP.budget.medium;
+  grid.innerHTML = filtered.map(b => {
+    const budgetBadge = getBudgetBadgeInfo(b.price, b.budgetMode);
     const classBadge = BADGE_MAP.effClass[b.effClass] || BADGE_MAP.effClass.mid;
     const zoneBadge = BADGE_MAP.zone[b.zone] || BADGE_MAP.zone.yellow;
 
-    const adminControls = state.editorMode ? `
+    const adminActions = state.editorMode ? `
       <div class="card-admin-actions">
         <button class="btn btn-secondary btn-sm" data-action="edit-build" data-id="${escapeHtml(b.id)}">Редактировать</button>
         <button class="btn btn-secondary btn-sm" data-action="dup-build" data-id="${escapeHtml(b.id)}">Дублировать</button>
@@ -317,7 +286,7 @@ function renderBuilds() {
         </div>
 
         <div class="badges-row">
-          <span class="badge ${budgetBadge.cls}">Бюджет: ${budgetBadge.text}</span>
+          <span class="badge ${budgetBadge.cls}">${budgetBadge.text}</span>
           <span class="badge ${classBadge.cls}">Класс: ${classBadge.text}</span>
           <span class="badge ${zoneBadge.cls}">${zoneBadge.text}</span>
         </div>
@@ -332,10 +301,10 @@ function renderBuilds() {
 
         <div class="share-code-box">
           <span class="share-code-text" title="${escapeHtml(b.code)}">${escapeHtml(b.code)}</span>
-          <button class="btn btn-primary btn-sm" data-action="copy-code" data-code="${escapeHtml(b.code)}">Скопировать код</button>
+          <button class="btn btn-primary btn-sm" data-action="copy-code" data-code="${escapeHtml(b.code)}">Копировать</button>
         </div>
 
-        ${adminControls}
+        ${adminActions}
       </article>
     `;
   }).join("");
@@ -343,7 +312,7 @@ function renderBuilds() {
 
 function renderGear() {
   const grid = document.getElementById("gear-grid");
-  const filtered = state.gear.filter((g) => {
+  const filtered = state.gear.filter(g => {
     if (state.filters.gearType !== "all" && g.type !== state.filters.gearType) return false;
     return true;
   });
@@ -353,11 +322,11 @@ function renderGear() {
     return;
   }
 
-  grid.innerHTML = filtered.map((g) => {
+  grid.innerHTML = filtered.map(g => {
     const statusBadge = BADGE_MAP.gearStatus[g.status] || BADGE_MAP.gearStatus.green;
-    const typeLabel = g.type === "helmet" ? "Шлем" : "Броня / Разгрузка";
+    const typeLabel = g.type === "helmet" ? "Шлем" : "Бронежилет";
 
-    const adminControls = state.editorMode ? `
+    const adminActions = state.editorMode ? `
       <div class="card-admin-actions">
         <button class="btn btn-secondary btn-sm" data-action="edit-gear" data-id="${escapeHtml(g.id)}">Редактировать</button>
         <button class="btn btn-danger-outline btn-sm" data-action="del-gear" data-id="${escapeHtml(g.id)}">Удалить</button>
@@ -367,43 +336,33 @@ function renderGear() {
     return `
       <article class="gear-card">
         <div class="gear-header">
-          <div>
-            <h3 class="gear-title">${escapeHtml(g.name)}</h3>
-          </div>
+          <h3 class="gear-title">${escapeHtml(g.name)}</h3>
           <span class="gear-price">${escapeHtml(g.price)}</span>
         </div>
-
         <div class="badges-row">
           <span class="badge badge-white">${typeLabel}</span>
           <span class="badge badge-yellow">${escapeHtml(g.tier)}</span>
           <span class="badge ${statusBadge.cls}">${statusBadge.text}</span>
         </div>
-
         <div class="build-note">${escapeHtml(g.notes)}</div>
-        ${adminControls}
+        ${adminActions}
       </article>
     `;
   }).join("");
 }
 
-// ============================================================================
-// ОБРАБОТЧИКИ СОБЫТИЙ И МОДАЛЬНЫХ ОКОН
-// ============================================================================
-
+// Инициализация событий
 function initEvents() {
-  // Переключение вкладок
-  document.querySelectorAll(".nav-tab").forEach((tab) => {
+  document.querySelectorAll(".nav-tab").forEach(tab => {
     tab.addEventListener("click", () => {
       document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
       tab.classList.add("active");
-
       const target = tab.dataset.tab;
       document.getElementById("tab-builds").classList.toggle("hidden", target !== "builds");
       document.getElementById("tab-gear").classList.toggle("hidden", target !== "gear");
     });
   });
 
-  // Переключение режима редактора
   const editorBtn = document.getElementById("toggle-editor-btn");
   const editorToolbar = document.getElementById("editor-toolbar");
   editorBtn.addEventListener("click", () => {
@@ -413,125 +372,161 @@ function initEvents() {
     renderAll();
   });
 
-  // Живой поиск
-  const searchInput = document.getElementById("search-input");
-  searchInput.addEventListener("input", (e) => {
+  document.getElementById("search-input").addEventListener("input", (e) => {
     state.filters.search = e.target.value;
     renderBuilds();
   });
 
-  // Мульти-фильтры
-  setupPillFilter("filter-budget", "budget", renderBuilds);
-  setupPillFilter("filter-class", "effClass", renderBuilds);
-  setupPillFilter("filter-zone", "zone", renderBuilds);
-  setupPillFilter("filter-gear-type", "gearType", renderGear);
+  document.getElementById("sort-select").addEventListener("change", (e) => {
+    state.filters.sort = e.target.value;
+    renderBuilds();
+  });
 
-  // Сброс фильтров
+  const budgetPillsContainer = document.getElementById("filter-budget-pills");
+  budgetPillsContainer.addEventListener("click", (e) => {
+    const pill = e.target.closest(".pill");
+    if (!pill) return;
+    budgetPillsContainer.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+    pill.classList.add("active");
+
+    const range = pill.dataset.range;
+    state.filters.activeRange = range;
+
+    let min = 0, max = 2000000;
+    if (range !== "all") {
+      const parts = range.split("-");
+      min = Number(parts[0]);
+      max = Number(parts[1]);
+    }
+    setPriceFilterValues(min, max, true);
+  });
+
+  const sliderMin = document.getElementById("price-slider-min");
+  const sliderMax = document.getElementById("price-slider-max");
+  const inputMin = document.getElementById("price-input-min");
+  const inputMax = document.getElementById("price-input-max");
+
+  function handlePriceChange(minVal, maxVal, updateSliders = false) {
+    let min = Number(minVal) || 0;
+    let max = Number(maxVal) || 2000000;
+    if (min > max) [min, max] = [max, min];
+
+    state.filters.priceMin = min;
+    state.filters.priceMax = max;
+
+    if (updateSliders) {
+      sliderMin.value = min;
+      sliderMax.value = max;
+      inputMin.value = min;
+      inputMax.value = max;
+    }
+
+    document.getElementById("budget-values-display").textContent = `${formatKoens(min).replace(" ₭", "")} – ${formatKoens(max)}`;
+    updateSliderTrackFill();
+
+    budgetPillsContainer.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+    renderBuilds();
+  }
+
+  sliderMin.addEventListener("input", (e) => handlePriceChange(e.target.value, sliderMax.value, false));
+  sliderMax.addEventListener("input", (e) => handlePriceChange(sliderMin.value, e.target.value, false));
+  inputMin.addEventListener("input", (e) => handlePriceChange(e.target.value, inputMax.value, true));
+  inputMax.addEventListener("input", (e) => handlePriceChange(inputMin.value, e.target.value, true));
+
+  function setPriceFilterValues(min, max, updateUI) {
+    handlePriceChange(min, max, true);
+    if (updateUI) {
+      sliderMin.value = min;
+      sliderMax.value = max;
+    }
+    updateSliderTrackFill();
+  }
+
+  setupVerticalFilter("filter-class", "effClass", renderBuilds);
+  setupVerticalFilter("filter-zone", "zone", renderBuilds);
+  setupVerticalFilter("filter-gear-type", "gearType", renderGear);
+
   document.getElementById("reset-filters-btn").addEventListener("click", () => {
     state.filters.search = "";
-    state.filters.budget = "all";
-    state.filters.effClass = "all";
-    state.filters.zone = "all";
-    searchInput.value = "";
+    document.getElementById("search-input").value = "";
+    document.getElementById("sort-select").value = "default";
+    state.filters.sort = "default";
 
-    ["filter-budget", "filter-class", "filter-zone"].forEach(id => {
-      const container = document.getElementById(id);
-      container.querySelectorAll(".pill").forEach(p => {
-        p.classList.toggle("active", p.dataset.value === "all");
-      });
+    setPriceFilterValues(0, 2000000, true);
+    budgetPillsContainer.querySelectorAll(".pill").forEach(p => p.classList.toggle("active", p.dataset.range === "all"));
+
+    ["filter-class", "filter-zone"].forEach(id => {
+      document.querySelectorAll(`#${id} .pill`).forEach(p => p.classList.toggle("active", p.dataset.value === "all"));
     });
     renderBuilds();
   });
 
-  // Делегирование кликов по карточкам сборок
   document.getElementById("builds-grid").addEventListener("click", async (e) => {
     const btn = e.target.closest("button[data-action]");
     if (!btn) return;
-
     const action = btn.dataset.action;
     const id = btn.dataset.id;
 
     if (action === "copy-code") {
-      const code = btn.dataset.code;
       try {
-        await navigator.clipboard.writeText(code);
-        showToast("Код сборки скопирован в буфер обмена!");
+        await navigator.clipboard.writeText(btn.dataset.code);
+        showToast("Код сборки скопирован!");
       } catch {
-        showToast("Скопируйте код вручную: " + code);
+        showToast("Код: " + btn.dataset.code);
       }
-    } else if (action === "edit-build") {
-      openBuildModal(id);
-    } else if (action === "dup-build") {
-      duplicateBuild(id);
-    } else if (action === "del-build") {
-      deleteBuild(id);
-    }
+    } else if (action === "edit-build") openBuildModal(id);
+    else if (action === "dup-build") duplicateBuild(id);
+    else if (action === "del-build") deleteBuild(id);
   });
 
-  // Делегирование кликов по карточкам снаряжения
   document.getElementById("gear-grid").addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-action]");
     if (!btn) return;
-    const action = btn.dataset.action;
-    const id = btn.dataset.id;
-
-    if (action === "edit-gear") {
-      openGearModal(id);
-    } else if (action === "del-gear") {
-      deleteGear(id);
-    }
+    if (btn.dataset.action === "edit-gear") openGearModal(btn.dataset.id);
+    else if (btn.dataset.action === "del-gear") deleteGear(btn.dataset.id);
   });
 
-  // Кнопки панели редактора
   document.getElementById("add-build-btn").addEventListener("click", () => openBuildModal(null));
   document.getElementById("add-gear-btn").addEventListener("click", () => openGearModal(null));
-  document.getElementById("export-json-btn").addEventListener("click", exportBuildsJson);
-  document.getElementById("import-json-input").addEventListener("change", importBuildsJson);
-  document.getElementById("reset-local-btn").addEventListener("click", async () => {
-    if (confirm("Сбросить локальные изменения в браузере и загрузить исходный builds.json с сайта?")) {
-      localStorage.removeItem(CONFIG.STORAGE_KEYS.LOCAL_DATA);
-      await fetchFromServerJson();
-      showToast("Кэш сброшен, загружен серверный builds.json");
-    }
-  });
-
-  // Закрытие и сохранение модалки сборки
-  document.getElementById("close-build-modal").addEventListener("click", closeBuildModal);
-  document.getElementById("cancel-build-modal").addEventListener("click", closeBuildModal);
+  document.getElementById("close-build-modal").addEventListener("click", () => document.getElementById("build-modal").classList.add("hidden"));
+  document.getElementById("cancel-build-modal").addEventListener("click", () => document.getElementById("build-modal").classList.add("hidden"));
   document.getElementById("build-form").addEventListener("submit", saveBuildForm);
 
-  // Закрытие и сохранение модалки снаряжения
-  document.getElementById("close-gear-modal").addEventListener("click", closeGearModal);
-  document.getElementById("cancel-gear-modal").addEventListener("click", closeGearModal);
+  document.getElementById("close-gear-modal").addEventListener("click", () => document.getElementById("gear-modal").classList.add("hidden"));
+  document.getElementById("cancel-gear-modal").addEventListener("click", () => document.getElementById("gear-modal").classList.add("hidden"));
   document.getElementById("gear-form").addEventListener("submit", saveGearForm);
+
+  document.getElementById("export-json-btn").addEventListener("click", exportJson);
+  document.getElementById("import-json-input").addEventListener("change", importJson);
+  document.getElementById("reset-local-btn").addEventListener("click", async () => {
+    if (confirm("Сбросить кэш и загрузить чистый builds.json?")) {
+      localStorage.removeItem(CONFIG.STORAGE_KEYS.LOCAL_DATA);
+      await fetchFromServerJson();
+      showToast("Кэш сброшен");
+    }
+  });
 }
 
-function setupPillFilter(containerId, filterKey, callback) {
+function setupVerticalFilter(containerId, key, callback) {
   const container = document.getElementById(containerId);
   container.addEventListener("click", (e) => {
     const pill = e.target.closest(".pill");
     if (!pill) return;
     container.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
     pill.classList.add("active");
-    state.filters[filterKey] = pill.dataset.value;
+    state.filters[key] = pill.dataset.value;
     callback();
   });
 }
 
-// ============================================================================
-// CRUD ОПЕРАЦИИ: СБОРКИ И СНАРЯЖЕНИЕ
-// ============================================================================
-
-function openBuildModal(buildId = null) {
+function openBuildModal(id = null) {
   const modal = document.getElementById("build-modal");
-  const title = document.getElementById("build-modal-title");
   const form = document.getElementById("build-form");
   form.reset();
-
-  if (buildId) {
-    const item = state.builds.find(b => b.id === buildId);
+  if (id) {
+    const item = state.builds.find(b => b.id === id);
     if (!item) return;
-    title.textContent = "РЕДАКТИРОВАТЬ СБОРКУ";
+    document.getElementById("build-modal-title").textContent = "РЕДАКТИРОВАТЬ СБОРКУ";
     document.getElementById("build-id").value = item.id;
     document.getElementById("build-weapon").value = item.weapon;
     document.getElementById("build-caliber").value = item.caliber;
@@ -543,22 +538,16 @@ function openBuildModal(buildId = null) {
     document.getElementById("build-code").value = item.code;
     document.getElementById("build-notes").value = item.notes || "";
   } else {
-    title.textContent = "ДОБАВИТЬ СБОРКУ";
+    document.getElementById("build-modal-title").textContent = "ДОБАВИТЬ СБОРКУ";
     document.getElementById("build-id").value = "";
-    document.getElementById("build-budget-mode").value = "auto";
   }
-
   modal.classList.remove("hidden");
-}
-
-function closeBuildModal() {
-  document.getElementById("build-modal").classList.add("hidden");
 }
 
 function saveBuildForm(e) {
   e.preventDefault();
   const id = document.getElementById("build-id").value || ("b_" + Date.now());
-  const newBuild = {
+  const item = {
     id,
     weapon: document.getElementById("build-weapon").value.trim(),
     caliber: document.getElementById("build-caliber").value.trim(),
@@ -571,55 +560,41 @@ function saveBuildForm(e) {
     notes: document.getElementById("build-notes").value.trim()
   };
 
-  const existingIdx = state.builds.findIndex(b => b.id === id);
-  if (existingIdx >= 0) {
-    state.builds[existingIdx] = newBuild;
-    showToast("Сборка обновлена");
-  } else {
-    state.builds.unshift(newBuild);
-    showToast("Новая сборка добавлена");
-  }
+  const idx = state.builds.findIndex(b => b.id === id);
+  if (idx >= 0) state.builds[idx] = item;
+  else state.builds.unshift(item);
 
   saveToLocalStorage();
   renderBuilds();
-  closeBuildModal();
+  document.getElementById("build-modal").classList.add("hidden");
+  showToast("Сборка сохранена");
 }
 
 function duplicateBuild(id) {
   const orig = state.builds.find(b => b.id === id);
   if (!orig) return;
-  const copy = {
-    ...orig,
-    id: "b_" + Date.now(),
-    weapon: orig.weapon + " (Копия)"
-  };
-  state.builds.unshift(copy);
+  state.builds.unshift({ ...orig, id: "b_" + Date.now(), weapon: orig.weapon + " (Копия)" });
   saveToLocalStorage();
   renderBuilds();
   showToast("Сборка продублирована");
 }
 
 function deleteBuild(id) {
-  const item = state.builds.find(b => b.id === id);
-  if (!item) return;
-  if (!confirm(`Удалить сборку «${item.weapon}»?`)) return;
+  if (!confirm("Удалить сборку?")) return;
   state.builds = state.builds.filter(b => b.id !== id);
   saveToLocalStorage();
   renderBuilds();
   showToast("Сборка удалена");
 }
 
-// Снаряжение
-function openGearModal(gearId = null) {
+function openGearModal(id = null) {
   const modal = document.getElementById("gear-modal");
-  const title = document.getElementById("gear-modal-title");
   const form = document.getElementById("gear-form");
   form.reset();
-
-  if (gearId) {
-    const item = state.gear.find(g => g.id === gearId);
+  if (id) {
+    const item = state.gear.find(g => g.id === id);
     if (!item) return;
-    title.textContent = "РЕДАКТИРОВАТЬ СНАРЯЖЕНИЕ";
+    document.getElementById("gear-modal-title").textContent = "РЕДАКТИРОВАТЬ СНАРЯЖЕНИЕ";
     document.getElementById("gear-id").value = item.id;
     document.getElementById("gear-name").value = item.name;
     document.getElementById("gear-type").value = item.type;
@@ -628,21 +603,16 @@ function openGearModal(gearId = null) {
     document.getElementById("gear-status").value = item.status;
     document.getElementById("gear-notes").value = item.notes;
   } else {
-    title.textContent = "ДОБАВИТЬ СНАРЯЖЕНИЕ";
+    document.getElementById("gear-modal-title").textContent = "ДОБАВИТЬ СНАРЯЖЕНИЕ";
     document.getElementById("gear-id").value = "";
   }
-
   modal.classList.remove("hidden");
-}
-
-function closeGearModal() {
-  document.getElementById("gear-modal").classList.add("hidden");
 }
 
 function saveGearForm(e) {
   e.preventDefault();
   const id = document.getElementById("gear-id").value || ("g_" + Date.now());
-  const newGear = {
+  const item = {
     id,
     name: document.getElementById("gear-name").value.trim(),
     type: document.getElementById("gear-type").value,
@@ -652,59 +622,39 @@ function saveGearForm(e) {
     notes: document.getElementById("gear-notes").value.trim()
   };
 
-  const existingIdx = state.gear.findIndex(g => g.id === id);
-  if (existingIdx >= 0) {
-    state.gear[existingIdx] = newGear;
-    showToast("Позиция снаряжения обновлена");
-  } else {
-    state.gear.unshift(newGear);
-    showToast("Снаряжение добавлено в шпаргалку");
-  }
+  const idx = state.gear.findIndex(g => g.id === id);
+  if (idx >= 0) state.gear[idx] = item;
+  else state.gear.unshift(item);
 
   saveToLocalStorage();
   renderGear();
-  closeGearModal();
+  document.getElementById("gear-modal").classList.add("hidden");
+  showToast("Снаряжение сохранено");
 }
 
 function deleteGear(id) {
-  const item = state.gear.find(g => g.id === id);
-  if (!item) return;
-  if (!confirm(`Удалить «${item.name}» из шпаргалки?`)) return;
+  if (!confirm("Удалить позицию?")) return;
   state.gear = state.gear.filter(g => g.id !== id);
   saveToLocalStorage();
   renderGear();
   showToast("Позиция удалена");
 }
 
-// ============================================================================
-// ИМПОРТ И ЭКСПОРТ BUILDS.JSON
-// ============================================================================
-
-function exportBuildsJson() {
-  const exportData = {
-    updatedAt: new Date().toISOString(),
-    builds: state.builds,
-    gear: state.gear
-  };
-  const jsonString = JSON.stringify(exportData, null, 2);
-  const blob = new Blob([jsonString], { type: "application/json" });
+function exportJson() {
+  const data = JSON.stringify({ updatedAt: new Date().toISOString(), builds: state.builds, gear: state.gear }, null, 2);
+  const blob = new Blob([data], { type: "application/json" });
   const url = URL.createObjectURL(blob);
-
   const a = document.createElement("a");
   a.href = url;
   a.download = "builds.json";
-  document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
   URL.revokeObjectURL(url);
-
   showToast("Файл builds.json скачан!");
 }
 
-function importBuildsJson(e) {
+function importJson(e) {
   const file = e.target.files[0];
   if (!file) return;
-
   const reader = new FileReader();
   reader.onload = (event) => {
     try {
@@ -712,16 +662,15 @@ function importBuildsJson(e) {
       applyDataToState(parsed, true);
       saveToLocalStorage();
       renderAll();
-      showToast("База builds.json успешно загружена!");
-    } catch (err) {
-      alert("Ошибка чтения JSON файла. Проверьте корректность формата.");
+      showToast("База успешно загружена!");
+    } catch {
+      alert("Ошибка чтения JSON файла.");
     }
     e.target.value = "";
   };
   reader.readAsText(file);
 }
 
-// Запуск при загрузке DOM
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
   initEvents();
