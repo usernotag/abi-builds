@@ -1,12 +1,12 @@
 /**
  * НАСТРОЙКИ ПРИЛОЖЕНИЯ И БЕЗОПАСНОСТИ
- * Новый пароль: 1337228
+ * Пароль доступа: 1337228 (хеш SHA-256)
  */
 
 const REQUIRE_PASSWORD = true;
 
 const CONFIG = {
-  PASSWORD_HASH: "de5be5b052d739e5cac092d9e644ca9ca4e6ebef80b7913c583958107e06b655",
+  PASSWORD_HASH: "a835a30164e97c31144be99d4a652ef987a53c8b28863535f4a53d914275852b",
   STORAGE_KEYS: {
     AUTH_SESSION: "abi_auth_v2",
     THEME: "abi_theme",
